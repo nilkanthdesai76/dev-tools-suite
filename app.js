@@ -81,6 +81,82 @@ function handleIconUpload(e) {
   if (file) processIconFile(file);
 }
 
+function loadSampleIcon() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d');
+
+  // Background Gradient
+  const grad = ctx.createLinearGradient(0, 0, 1024, 1024);
+  grad.addColorStop(0, '#1e1b4b');
+  grad.addColorStop(0.5, '#0f172a');
+  grad.addColorStop(1, '#020617');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  // Subtle circular ambient glow
+  const radial = ctx.createRadialGradient(512, 512, 50, 512, 512, 480);
+  radial.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+  radial.addColorStop(0.7, 'rgba(139, 92, 246, 0.15)');
+  radial.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = radial;
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  // Outer border ring
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = 16;
+  ctx.strokeRect(32, 32, 960, 960);
+
+  // Central Hero Glyph: Glowing Lightning Bolt
+  ctx.save();
+  ctx.shadowColor = '#00f0ff';
+  ctx.shadowBlur = 60;
+  ctx.fillStyle = '#ffffff';
+
+  ctx.beginPath();
+  ctx.moveTo(560, 160);
+  ctx.lineTo(340, 520);
+  ctx.lineTo(500, 520);
+  ctx.lineTo(440, 864);
+  ctx.lineTo(700, 460);
+  ctx.lineTo(540, 460);
+  ctx.closePath();
+
+  const boltGrad = ctx.createLinearGradient(340, 160, 700, 864);
+  boltGrad.addColorStop(0, '#ffffff');
+  boltGrad.addColorStop(0.4, '#38bdf8');
+  boltGrad.addColorStop(1, '#6366f1');
+  ctx.fillStyle = boltGrad;
+  ctx.fill();
+  ctx.restore();
+
+  // Glass Specular Sheen (diagonal overlay)
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(1024, 0);
+  ctx.lineTo(0, 600);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+  ctx.fill();
+  ctx.restore();
+
+  const img = new Image();
+  img.onload = () => {
+    sourceImage = img;
+    document.getElementById('dropzonePrompt').style.display = 'none';
+    const previewStage = document.getElementById('previewStage');
+    previewStage.style.display = 'flex';
+    const previewImg = document.getElementById('sourceIconPreview');
+    previewImg.src = img.src;
+    document.getElementById('sourceIconSpecs').textContent = `1024 × 1024 PNG (Demo Asset)`;
+    document.getElementById('iconActionBar').style.display = 'flex';
+    renderIconGrid();
+  };
+  img.src = canvas.toDataURL('image/png');
+}
+
 function processIconFile(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -883,10 +959,13 @@ function escapeHtml(string) {
     .replace(/'/g, '&#039;');
 }
 
-// Initialize on load
+// Initialize on load with rich default assets across all tools
 document.addEventListener('DOMContentLoaded', () => {
   setupDropzone();
   initMesh();
   setupMeshDrag();
+  loadMeshPreset('aurora');
   loadSampleJson();
+  loadSampleSvg();
+  loadSampleIcon();
 });

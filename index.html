@@ -61,12 +61,16 @@
           <p>Drop a 1024×1024 PNG to auto-generate all iPhone, iPad, Mac, Apple Watch, and visionOS icons with a valid Contents.json asset catalog.</p>
         </div>
 
-        <div class="dropzone" id="iconDropzone" onclick="document.getElementById('iconInput').click()">
+        <div class="dropzone" id="iconDropzone">
           <input type="file" id="iconInput" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleIconUpload(event)">
           <div class="dropzone-inner" id="dropzonePrompt">
             <div class="drop-icon">🖼️</div>
             <h3>Drop your 1024×1024 App Icon here</h3>
             <p>Or click to browse from Finder</p>
+            <div style="margin-top: 14px; display: flex; gap: 10px; justify-content: center;">
+              <button class="btn-primary" style="padding: 8px 16px; font-size: 12px;" onclick="event.stopPropagation(); document.getElementById('iconInput').click()">📁 Browse File</button>
+              <button class="btn-secondary" style="padding: 8px 16px; font-size: 12px;" onclick="event.stopPropagation(); loadSampleIcon()">⚡ Load Demo Icon</button>
+            </div>
           </div>
           <div class="preview-stage" id="previewStage" style="display:none">
             <img id="sourceIconPreview" alt="Icon Preview">
@@ -78,6 +82,7 @@
           <button class="btn-primary" onclick="exportAppIconZip()">
             ⬇️ Download AppIcon.appiconset.zip
           </button>
+          <button class="btn-secondary" onclick="loadSampleIcon()">Regenerate Demo</button>
           <button class="btn-secondary" onclick="resetIconDropzone()">Clear</button>
         </div>
 
