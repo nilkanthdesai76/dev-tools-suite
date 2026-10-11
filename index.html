@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevForge — Zero-Backend Apple & Web Developer Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-info">
+          <span class="brand-name">DevForge</span>
+          <span class="brand-tag">Client-Side Suite</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" onclick="switchTab('appicon')">
+          <span class="nav-icon">📱</span>
+          <span>AppIcon Studio</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('json-swift')">
+          <span class="nav-icon">📦</span>
+          <span>JSON ➔ Swift / TS</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('mesh-gradient')">
+          <span class="nav-icon">🎨</span>
+          <span>SwiftUI Mesh Gradient</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('svg-path')">
+          <span class="nav-icon">📐</span>
+          <span>SVG ➔ SwiftUI Path</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('sound-fx')">
+          <span class="nav-icon">👾</span>
+          <span>8-Bit Sound FX Synth</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="privacy-badge">
+          <span>🔒 100% Client-Side</span>
+          <p>Zero bytes ever leave your Mac.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Workspace -->
+    <main class="main-content">
+      <!-- 1. AppIcon Studio -->
+      <section id="tab-appicon" class="tab-pane active">
+        <div class="pane-header">
+          <h2>Xcode AppIcon Studio</h2>
+          <p>Drop a 1024×1024 PNG to auto-generate all iPhone, iPad, Mac, Apple Watch, and visionOS icons with a valid Contents.json asset catalog.</p>
+        </div>
+
+        <div class="dropzone" id="iconDropzone" onclick="document.getElementById('iconInput').click()">
+          <input type="file" id="iconInput" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleIconUpload(event)">
+          <div class="dropzone-inner" id="dropzonePrompt">
+            <div class="drop-icon">🖼️</div>
+            <h3>Drop your 1024×1024 App Icon here</h3>
+            <p>Or click to browse from Finder</p>
+          </div>
+          <div class="preview-stage" id="previewStage" style="display:none">
+            <img id="sourceIconPreview" alt="Icon Preview">
+            <div class="icon-specs" id="sourceIconSpecs">1024 × 1024 PNG</div>
+          </div>
+        </div>
+
+        <div class="action-bar" id="iconActionBar" style="display:none">
+          <button class="btn-primary" onclick="exportAppIconZip()">
+            ⬇️ Download AppIcon.appiconset.zip
+          </button>
+          <button class="btn-secondary" onclick="resetIconDropzone()">Clear</button>
+        </div>
+
+        <div class="icons-grid" id="generatedIconsGrid" style="display:none">
+          <!-- Icon Cards inserted via JS -->
+        </div>
+      </section>
+
+      <!-- 2. JSON -> Swift / TypeScript -->
+      <section id="tab-json-swift" class="tab-pane">
+        <div class="pane-header">
+          <h2>JSON ➔ Swift Codable & TypeScript</h2>
+          <p>Generate production-grade Swift 6 (Sendable, Identifiable, CodingKeys) and TypeScript interfaces instantly.</p>
+        </div>
+
+        <div class="split-editor">
+          <div class="editor-box">
+            <div class="editor-bar">
+              <span>Input JSON</span>
+              <button class="btn-xs" onclick="loadSampleJson()">Load Sample</button>
+            </div>
+            <textarea id="jsonInputText" placeholder='Paste your JSON payload here...' oninput="convertJson()"></textarea>
+          </div>
+
+          <div class="editor-box">
+            <div class="editor-bar">
+              <div class="lang-toggle">
+                <button class="lang-btn active" id="btnSwift" onclick="toggleLang('swift')">Swift 6 Codable</button>
+                <button class="lang-btn" id="btnTs" onclick="toggleLang('ts')">TypeScript</button>
+              </div>
+              <button class="btn-xs" onclick="copyCode()">📋 Copy</button>
+            </div>
+            <pre id="codeOutput"><code>// Paste JSON on the left to generate model...</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. SwiftUI Mesh Gradient Lab -->
+      <section id="tab-mesh-gradient" class="tab-pane">
+        <div class="pane-header">
+          <h2>SwiftUI Mesh Gradient Lab</h2>
+          <p>Interactive 3×3 point matrix generator with real-time iOS 18 SwiftUI MeshGradient and CSS export.</p>
+        </div>
+
+        <div class="mesh-workspace">
+          <div class="mesh-canvas-wrap">
+            <canvas id="meshCanvas" width="400" height="400"></canvas>
+            <div id="meshPointsOverlay"></div>
+          </div>
+
+          <div class="mesh-sidebar">
+            <div class="control-group">
+              <label>Preset Gradients</label>
+              <div class="preset-pills">
+                <button class="pill" onclick="loadMeshPreset('aurora')">🌌 Aurora</button>
+                <button class="pill" onclick="loadMeshPreset('sunset')">🌅 Sunset</button>
+                <button class="pill" onclick="loadMeshPreset('neon')">⚡ Cyber Neon</button>
+                <button class="pill" onclick="loadMeshPreset('monochrome')">🌑 Dark Void</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="editor-bar">
+                <span>Generated SwiftUI Code</span>
+                <button class="btn-xs" onclick="copyMeshCode()">📋 Copy</button>
+              </div>
+              <pre id="meshCodeOutput"><code>// MeshGradient code...</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. SVG -> SwiftUI Path -->
+      <section id="tab-svg-path" class="tab-pane">
+        <div class="pane-header">
+          <h2>SVG ➔ SwiftUI Path Generator</h2>
+          <p>Extracts vector path commands from SVG paths and translates them into clean SwiftUI Path { ... } coordinates.</p>
+        </div>
+
+        <div class="split-editor">
+          <div class="editor-box">
+            <div class="editor-bar">
+              <span>SVG Code or Path (d="...")</span>
+              <button class="btn-xs" onclick="loadSampleSvg()">Load Star Sample</button>
+            </div>
+            <textarea id="svgInputText" placeholder='Paste &lt;svg&gt; or &lt;path d="..."&gt; here...' oninput="convertSvg()"></textarea>
+          </div>
+
+          <div class="editor-box">
+            <div class="editor-bar">
+              <span>SwiftUI Path Code</span>
+              <button class="btn-xs" onclick="copySvgCode()">📋 Copy</button>
+            </div>
+            <pre id="svgOutput"><code>// Paste SVG on the left...</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 8-Bit Sound FX Synth -->
+      <section id="tab-sound-fx" class="tab-pane">
+        <div class="pane-header">
+          <h2>8-Bit Sound FX Synthesizer</h2>
+          <p>Web Audio API oscillator engine. Synthesize retro gaming sound effects and export uncompressed .wav files directly.</p>
+        </div>
+
+        <div class="sfx-workspace">
+          <div class="sfx-presets">
+            <button class="sfx-btn" onclick="playSfx('laser')">🔫 Laser Blast</button>
+            <button class="sfx-btn" onclick="playSfx('jump')">🦘 Jump</button>
+            <button class="sfx-btn" onclick="playSfx('coin')">🪙 Coin / Pickup</button>
+            <button class="sfx-btn" onclick="playSfx('explosion')">💥 Explosion</button>
+            <button class="sfx-btn" onclick="playSfx('powerup')">⭐ Powerup</button>
+          </div>
+
+          <div class="sfx-controls">
+            <div class="sfx-dial">
+              <label>Frequency: <span id="valFreq">440</span> Hz</label>
+              <input type="range" id="paramFreq" min="100" max="2000" value="440" oninput="updateSfxParam()">
+            </div>
+            <div class="sfx-dial">
+              <label>Decay: <span id="valDecay">0.3</span>s</label>
+              <input type="range" id="paramDecay" min="0.05" max="1.5" step="0.05" value="0.3" oninput="updateSfxParam()">
+            </div>
+            <div class="sfx-dial">
+              <label>Waveform</label>
+              <select id="paramWave" onchange="updateSfxParam()">
+                <option value="square">Square (Classic NES)</option>
+                <option value="sawtooth">Sawtooth (Punchy Arcade)</option>
+                <option value="triangle">Triangle (Deep Chiptune)</option>
+                <option value="sine">Sine (Clean Pure)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="action-bar" style="margin-top: 20px;">
+            <button class="btn-primary" onclick="testCustomSfx()">▶️ Test Sound</button>
+            <button class="btn-secondary" onclick="exportWav()">⬇️ Download .WAV</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
