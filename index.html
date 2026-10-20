@@ -21,24 +21,33 @@
         </div>
       </div>
 
+      <div class="nav-section-title">Design & Assets</div>
       <nav class="nav-menu">
-        <button class="nav-item active" onclick="switchTab('appicon')">
+        <button class="nav-item active" data-tab="appicon" onclick="switchTab('appicon')">
           <span class="nav-icon">📱</span>
           <span>AppIcon Studio</span>
         </button>
-        <button class="nav-item" onclick="switchTab('json-swift')">
-          <span class="nav-icon">📦</span>
-          <span>JSON ➔ Swift / TS</span>
+        <button class="nav-item" data-tab="custom-gradient" onclick="switchTab('custom-gradient')">
+          <span class="nav-icon">🌈</span>
+          <span>Gradient Studio Pro</span>
         </button>
-        <button class="nav-item" onclick="switchTab('mesh-gradient')">
+        <button class="nav-item" data-tab="mesh-gradient" onclick="switchTab('mesh-gradient')">
           <span class="nav-icon">🎨</span>
           <span>SwiftUI Mesh Gradient</span>
         </button>
-        <button class="nav-item" onclick="switchTab('svg-path')">
+
+        <div class="nav-section-title" style="margin-top: 12px;">Code & Vectors</div>
+        <button class="nav-item" data-tab="json-swift" onclick="switchTab('json-swift')">
+          <span class="nav-icon">📦</span>
+          <span>JSON ➔ Swift / TS</span>
+        </button>
+        <button class="nav-item" data-tab="svg-path" onclick="switchTab('svg-path')">
           <span class="nav-icon">📐</span>
           <span>SVG ➔ SwiftUI Path</span>
         </button>
-        <button class="nav-item" onclick="switchTab('sound-fx')">
+
+        <div class="nav-section-title" style="margin-top: 12px;">Audio & Retro</div>
+        <button class="nav-item" data-tab="sound-fx" onclick="switchTab('sound-fx')">
           <span class="nav-icon">👾</span>
           <span>8-Bit Sound FX Synth</span>
         </button>
@@ -46,8 +55,11 @@
 
       <div class="sidebar-footer">
         <div class="privacy-badge">
-          <span>🔒 100% Client-Side</span>
-          <p>Zero bytes ever leave your Mac.</p>
+          <div class="privacy-badge-icon"></div>
+          <div class="privacy-badge-text">
+            <span>100% Client-Side Engine</span>
+            <p>Zero bytes ever leave your Mac.</p>
+          </div>
         </div>
       </div>
     </aside>
@@ -57,24 +69,28 @@
       <!-- 1. AppIcon Studio -->
       <section id="tab-appicon" class="tab-pane active">
         <div class="pane-header">
-          <h2>Xcode AppIcon Studio</h2>
-          <p>Drop a 1024×1024 PNG to auto-generate all iPhone, iPad, Mac, Apple Watch, and visionOS icons with a valid Contents.json asset catalog.</p>
+          <h2>📱 Xcode AppIcon Studio</h2>
+          <p>Drop a 1024×1024 master icon PNG to instantly generate the full asset catalog for iOS, iPadOS, macOS, watchOS, and visionOS with zero cloud uploads.</p>
         </div>
 
         <div class="dropzone" id="iconDropzone">
           <input type="file" id="iconInput" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleIconUpload(event)">
           <div class="dropzone-inner" id="dropzonePrompt">
-            <div class="drop-icon">🖼️</div>
-            <h3>Drop your 1024×1024 App Icon here</h3>
-            <p>Or click to browse from Finder</p>
-            <div style="margin-top: 14px; display: flex; gap: 10px; justify-content: center;">
-              <button class="btn-primary" style="padding: 8px 16px; font-size: 12px;" onclick="event.stopPropagation(); document.getElementById('iconInput').click()">📁 Browse File</button>
-              <button class="btn-secondary" style="padding: 8px 16px; font-size: 12px;" onclick="event.stopPropagation(); loadSampleIcon()">⚡ Load Demo Icon</button>
+            <div class="drop-icon-wrapper">
+              <div class="drop-icon">🖼️</div>
+            </div>
+            <div class="drop-text-group">
+              <h3>Drop your 1024×1024 App Icon here</h3>
+              <p>Drag an image file from Finder, or choose an option below</p>
+            </div>
+            <div class="drop-actions">
+              <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('iconInput').click()">📁 Browse Finder</button>
+              <button class="btn-secondary" onclick="event.stopPropagation(); loadSampleIcon()">⚡ Load Demo Icon</button>
             </div>
           </div>
           <div class="preview-stage" id="previewStage" style="display:none">
             <img id="sourceIconPreview" alt="Icon Preview">
-            <div class="icon-specs" id="sourceIconSpecs">1024 × 1024 PNG</div>
+            <div class="icon-specs" id="sourceIconSpecs">1024 × 1024 PNG Master</div>
           </div>
         </div>
 
@@ -82,19 +98,194 @@
           <button class="btn-primary" onclick="exportAppIconZip()">
             ⬇️ Download AppIcon.appiconset.zip
           </button>
-          <button class="btn-secondary" onclick="loadSampleIcon()">Regenerate Demo</button>
+          <button class="btn-secondary" onclick="loadSampleIcon()">⚡ Regenerate Demo</button>
           <button class="btn-secondary" onclick="resetIconDropzone()">Clear</button>
         </div>
 
         <div class="icons-grid" id="generatedIconsGrid" style="display:none">
-          <!-- Icon Cards inserted via JS -->
+          <!-- Icon Cards generated dynamically via JS -->
         </div>
       </section>
 
-      <!-- 2. JSON -> Swift / TypeScript -->
+      <!-- 2. Custom Gradient Studio Pro (NEW FEATURE) -->
+      <section id="tab-custom-gradient" class="tab-pane">
+        <div class="pane-header">
+          <h2>🌈 Gradient Studio Pro</h2>
+          <p>Design modern multi-stop linear, radial, and conic gradients with live interactive preview, angle controls, noise texture overlay, and 1-click code export.</p>
+        </div>
+
+        <div class="gradient-studio-grid">
+          <!-- Left Column: Live Visual Preview -->
+          <div class="gradient-preview-panel">
+            <div class="gradient-preview-box-container" id="gradPreviewContainer">
+              <div class="gradient-stage-surface" id="gradStageSurface"></div>
+              <div class="gradient-noise-overlay" id="gradNoiseOverlay"></div>
+
+              <!-- Inner Preview Mode Content -->
+              <div class="gradient-preview-content" id="gradPreviewContent">
+                <div id="previewCardMockup" style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+                  <span style="font-size:32px;">✨</span>
+                  <h3 style="font-size:20px; font-weight:800; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5);">Dynamic Gradient</h3>
+                  <p style="font-size:12px; color:rgba(255,255,255,0.85); font-weight:600;">Custom Multi-Stop Palette</p>
+                </div>
+                <div id="previewPhoneMockup" class="preview-phone-frame" style="display:none;">
+                  <div class="phone-island"></div>
+                  <div id="phoneScreenGrad" style="width:100%; height:100%; display:flex; align-items:flex-end; padding:20px;">
+                    <div style="background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); padding:10px 14px; border-radius:12px; width:100%;">
+                      <span style="font-size:11px; color:#fff; font-weight:700;">iOS 18 Lockscreen</span>
+                    </div>
+                  </div>
+                </div>
+                <div id="previewTextMockup" style="display:none;">
+                  <h1 id="gradientTextTarget" style="font-size:54px; font-weight:900; letter-spacing:-0.03em; line-height:1;">
+                    DEVFORGE
+                  </h1>
+                </div>
+                <div id="previewButtonMockup" style="display:none;">
+                  <div id="gradientButtonTarget" style="padding:14px 28px; border-radius:14px; color:#fff; font-weight:800; font-size:16px; box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+                    Start Exploring ➔
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview Toolbar -->
+            <div class="gradient-preview-toolbar">
+              <div class="preview-mode-pills">
+                <button class="preview-mode-btn active" onclick="setGradientPreviewMode('card')">Card</button>
+                <button class="preview-mode-btn" onclick="setGradientPreviewMode('phone')">Phone</button>
+                <button class="preview-mode-btn" onclick="setGradientPreviewMode('text')">Text Mask</button>
+                <button class="preview-mode-btn" onclick="setGradientPreviewMode('button')">Button</button>
+              </div>
+
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" id="chkNoise" onchange="toggleGradientNoise(this.checked)" style="accent-color:var(--accent);">
+                  Grain Noise
+                </label>
+                <button class="btn-xs" onclick="randomizeGradient()">🎲 Randomize</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Interactive Controls & Export -->
+          <div class="gradient-controls-panel">
+            <!-- 1. Gradient Type & Angle -->
+            <div class="control-card">
+              <div class="control-title">
+                <span>Gradient Type</span>
+              </div>
+              <div class="type-toggle-group">
+                <button class="type-btn active" id="typeLinear" onclick="setGradientType('linear')">Linear</button>
+                <button class="type-btn" id="typeRadial" onclick="setGradientType('radial')">Radial</button>
+                <button class="type-btn" id="typeConic" onclick="setGradientType('conic')">Conic / Angular</button>
+              </div>
+
+              <!-- Linear Angle Control -->
+              <div id="linearAngleControls">
+                <div class="angle-dial-row">
+                  <div class="angle-slider-wrap">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12px; color:var(--text-muted);">
+                      <span>Direction Angle</span>
+                      <span id="angleDisplay" class="angle-value-badge">135°</span>
+                    </div>
+                    <input type="range" id="gradAngleSlider" min="0" max="360" value="135" oninput="setGradientAngle(this.value)" style="width:100%; accent-color:var(--accent);">
+                  </div>
+                </div>
+                <div class="quick-angles">
+                  <button class="quick-angle-btn" onclick="setGradientAngle(0)">0° (↑)</button>
+                  <button class="quick-angle-btn" onclick="setGradientAngle(45)">45° (↗)</button>
+                  <button class="quick-angle-btn" onclick="setGradientAngle(90)">90° (➔)</button>
+                  <button class="quick-angle-btn" onclick="setGradientAngle(135)">135° (↘)</button>
+                  <button class="quick-angle-btn" onclick="setGradientAngle(180)">180° (↓)</button>
+                  <button class="quick-angle-btn" onclick="setGradientAngle(270)">270° (←)</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Color Stops Manager -->
+            <div class="control-card">
+              <div class="control-title">
+                <span>Color Ramp & Stops</span>
+                <button class="btn-xs" onclick="addGradientStop()">+ Add Stop</button>
+              </div>
+
+              <!-- Visual Stop Bar -->
+              <div class="gradient-stops-bar" id="gradStopsBar"></div>
+
+              <!-- Color Stop Rows List -->
+              <div class="stops-list" id="stopsListContainer">
+                <!-- Injected via JavaScript -->
+              </div>
+            </div>
+
+            <!-- 3. Curated Presets Library -->
+            <div class="control-card">
+              <div class="control-title">
+                <span>Curated Pro Palettes</span>
+              </div>
+              <div class="presets-grid" id="presetsGridContainer">
+                <!-- Preset chips rendered via JS -->
+              </div>
+            </div>
+
+            <!-- 4. Export Code Box -->
+            <div class="code-export-box">
+              <div class="code-export-header">
+                <div class="code-tabs">
+                  <button class="code-tab-btn active" id="tabBtnCss" onclick="setExportFormat('css')">CSS</button>
+                  <button class="code-tab-btn" id="tabBtnSwiftUI" onclick="setExportFormat('swiftui')">SwiftUI</button>
+                  <button class="code-tab-btn" id="tabBtnTailwind" onclick="setExportFormat('tailwind')">Tailwind</button>
+                  <button class="code-tab-btn" id="tabBtnFlutter" onclick="setExportFormat('flutter')">Flutter</button>
+                  <button class="code-tab-btn" id="tabBtnSvg" onclick="setExportFormat('svg')">SVG</button>
+                </div>
+                <button class="btn-xs" onclick="copyGradientCode()">📋 Copy</button>
+              </div>
+              <pre class="code-display" id="gradCodeOutput"><code>// Gradient code here...</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. SwiftUI Mesh Gradient Lab -->
+      <section id="tab-mesh-gradient" class="tab-pane">
+        <div class="pane-header">
+          <h2>🎨 SwiftUI Mesh Gradient Lab</h2>
+          <p>Interactive 3×3 point matrix generator with real-time iOS 18 SwiftUI MeshGradient and CSS export.</p>
+        </div>
+
+        <div class="mesh-workspace">
+          <div class="mesh-canvas-wrap">
+            <canvas id="meshCanvas" width="400" height="400"></canvas>
+            <div id="meshPointsOverlay"></div>
+          </div>
+
+          <div class="mesh-sidebar">
+            <div class="control-card">
+              <div class="control-title"><span>Preset Mesh Gradients</span></div>
+              <div class="preset-pills">
+                <button class="pill" onclick="loadMeshPreset('aurora')">🌌 Aurora</button>
+                <button class="pill" onclick="loadMeshPreset('sunset')">🌅 Sunset</button>
+                <button class="pill" onclick="loadMeshPreset('neon')">⚡ Cyber Neon</button>
+                <button class="pill" onclick="loadMeshPreset('monochrome')">🌑 Dark Void</button>
+              </div>
+            </div>
+
+            <div class="code-export-box" style="margin-top: 14px;">
+              <div class="code-export-header">
+                <span style="font-size:12px; font-weight:700; color:var(--text-muted);">Generated SwiftUI MeshGradient</span>
+                <button class="btn-xs" onclick="copyMeshCode()">📋 Copy</button>
+              </div>
+              <pre class="code-display" id="meshCodeOutput"><code>// MeshGradient code...</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. JSON -> Swift / TypeScript -->
       <section id="tab-json-swift" class="tab-pane">
         <div class="pane-header">
-          <h2>JSON ➔ Swift Codable & TypeScript</h2>
+          <h2>📦 JSON ➔ Swift Codable & TypeScript</h2>
           <p>Generate production-grade Swift 6 (Sendable, Identifiable, CodingKeys) and TypeScript interfaces instantly.</p>
         </div>
 
@@ -102,7 +293,7 @@
           <div class="editor-box">
             <div class="editor-bar">
               <span>Input JSON</span>
-              <button class="btn-xs" onclick="loadSampleJson()">Load Sample</button>
+              <button class="btn-xs" onclick="loadSampleJson()">⚡ Load Sample</button>
             </div>
             <textarea id="jsonInputText" placeholder='Paste your JSON payload here...' oninput="convertJson()"></textarea>
           </div>
@@ -120,45 +311,10 @@
         </div>
       </section>
 
-      <!-- 3. SwiftUI Mesh Gradient Lab -->
-      <section id="tab-mesh-gradient" class="tab-pane">
-        <div class="pane-header">
-          <h2>SwiftUI Mesh Gradient Lab</h2>
-          <p>Interactive 3×3 point matrix generator with real-time iOS 18 SwiftUI MeshGradient and CSS export.</p>
-        </div>
-
-        <div class="mesh-workspace">
-          <div class="mesh-canvas-wrap">
-            <canvas id="meshCanvas" width="400" height="400"></canvas>
-            <div id="meshPointsOverlay"></div>
-          </div>
-
-          <div class="mesh-sidebar">
-            <div class="control-group">
-              <label>Preset Gradients</label>
-              <div class="preset-pills">
-                <button class="pill" onclick="loadMeshPreset('aurora')">🌌 Aurora</button>
-                <button class="pill" onclick="loadMeshPreset('sunset')">🌅 Sunset</button>
-                <button class="pill" onclick="loadMeshPreset('neon')">⚡ Cyber Neon</button>
-                <button class="pill" onclick="loadMeshPreset('monochrome')">🌑 Dark Void</button>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <div class="editor-bar">
-                <span>Generated SwiftUI Code</span>
-                <button class="btn-xs" onclick="copyMeshCode()">📋 Copy</button>
-              </div>
-              <pre id="meshCodeOutput"><code>// MeshGradient code...</code></pre>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 4. SVG -> SwiftUI Path -->
+      <!-- 5. SVG -> SwiftUI Path -->
       <section id="tab-svg-path" class="tab-pane">
         <div class="pane-header">
-          <h2>SVG ➔ SwiftUI Path Generator</h2>
+          <h2>📐 SVG ➔ SwiftUI Path Generator</h2>
           <p>Extracts vector path commands from SVG paths and translates them into clean SwiftUI Path { ... } coordinates.</p>
         </div>
 
@@ -181,10 +337,10 @@
         </div>
       </section>
 
-      <!-- 5. 8-Bit Sound FX Synth -->
+      <!-- 6. 8-Bit Sound FX Synth -->
       <section id="tab-sound-fx" class="tab-pane">
         <div class="pane-header">
-          <h2>8-Bit Sound FX Synthesizer</h2>
+          <h2>👾 8-Bit Sound FX Synthesizer</h2>
           <p>Web Audio API oscillator engine. Synthesize retro gaming sound effects and export uncompressed .wav files directly.</p>
         </div>
 
@@ -200,11 +356,11 @@
           <div class="sfx-controls">
             <div class="sfx-dial">
               <label>Frequency: <span id="valFreq">440</span> Hz</label>
-              <input type="range" id="paramFreq" min="100" max="2000" value="440" oninput="updateSfxParam()">
+              <input type="range" id="paramFreq" min="100" max="2000" value="440" oninput="updateSfxParam()" style="width:100%; accent-color:var(--accent);">
             </div>
             <div class="sfx-dial">
               <label>Decay: <span id="valDecay">0.3</span>s</label>
-              <input type="range" id="paramDecay" min="0.05" max="1.5" step="0.05" value="0.3" oninput="updateSfxParam()">
+              <input type="range" id="paramDecay" min="0.05" max="1.5" step="0.05" value="0.3" oninput="updateSfxParam()" style="width:100%; accent-color:var(--accent);">
             </div>
             <div class="sfx-dial">
               <label>Waveform</label>
@@ -217,7 +373,7 @@
             </div>
           </div>
 
-          <div class="action-bar" style="margin-top: 20px;">
+          <div class="action-bar" style="margin-top: 24px;">
             <button class="btn-primary" onclick="testCustomSfx()">▶️ Test Sound</button>
             <button class="btn-secondary" onclick="exportWav()">⬇️ Download .WAV</button>
           </div>

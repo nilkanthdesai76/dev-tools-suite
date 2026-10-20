@@ -9,15 +9,13 @@ function switchTab(tabId) {
   const targetPane = document.getElementById(`tab-${tabId}`);
   if (targetPane) targetPane.classList.add('active');
 
-  const navButtons = document.querySelectorAll('.nav-item');
-  const tabNames = ['appicon', 'json-swift', 'mesh-gradient', 'svg-path', 'sound-fx'];
-  const index = tabNames.indexOf(tabId);
-  if (index !== -1 && navButtons[index]) {
-    navButtons[index].classList.add('active');
-  }
+  const navItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+  if (navItem) navItem.classList.add('active');
 
   if (tabId === 'mesh-gradient') {
     renderMesh();
+  } else if (tabId === 'custom-gradient') {
+    renderCustomGradient();
   }
 }
 
@@ -213,7 +211,9 @@ function renderIconGrid() {
 
 function resetIconDropzone() {
   sourceImage = null;
-  document.getElementById('dropzonePrompt').style.display = 'flex';
+  const prompt = document.getElementById('dropzonePrompt');
+  prompt.style.display = 'flex';
+  prompt.style.flexDirection = 'column';
   document.getElementById('previewStage').style.display = 'none';
   document.getElementById('iconActionBar').style.display = 'none';
   document.getElementById('generatedIconsGrid').style.display = 'none';
@@ -274,6 +274,358 @@ async function exportAppIconZip() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(downloadUrl);
+}
+
+// ==========================================
+// 2. Custom Gradient Studio Pro
+// ==========================================
+let gradState = {
+  type: 'linear', // 'linear' | 'radial' | 'conic'
+  angle: 135,
+  noise: false,
+  previewMode: 'card',
+  exportFormat: 'css',
+  stops: [
+    { color: '#6366f1', position: 0 },
+    { color: '#a855f7', position: 50 },
+    { color: '#ec4899', position: 100 }
+  ]
+};
+
+const GRADIENT_PRESETS = [
+  { name: 'Sunset Flare', type: 'linear', angle: 135, stops: [{ color: '#f43f5e', position: 0 }, { color: '#fb923c', position: 50 }, { color: '#facc15', position: 100 }] },
+  { name: 'Cyber Neon', type: 'linear', angle: 135, stops: [{ color: '#06b6d4', position: 0 }, { color: '#3b82f6', position: 50 }, { color: '#ec4899', position: 100 }] },
+  { name: 'Hyper Aurora', type: 'linear', angle: 120, stops: [{ color: '#10b981', position: 0 }, { color: '#06b6d4', position: 50 }, { color: '#6366f1', position: 100 }] },
+  { name: 'Velvet Lavender', type: 'linear', angle: 135, stops: [{ color: '#4f46e5', position: 0 }, { color: '#7c3aed', position: 50 }, { color: '#c084fc', position: 100 }] },
+  { name: 'Cosmic Dark', type: 'linear', angle: 180, stops: [{ color: '#0f172a', position: 0 }, { color: '#312e81', position: 50 }, { color: '#581c87', position: 100 }] },
+  { name: 'Emerald Glow', type: 'linear', angle: 90, stops: [{ color: '#059669', position: 0 }, { color: '#10b981', position: 50 }, { color: '#34d399', position: 100 }] },
+  { name: 'Miami Vice', type: 'linear', angle: 45, stops: [{ color: '#f43f5e', position: 0 }, { color: '#d946ef', position: 50 }, { color: '#8b5cf6', position: 100 }] },
+  { name: 'Solar Flare', type: 'linear', angle: 135, stops: [{ color: '#ea580c', position: 0 }, { color: '#f97316', position: 50 }, { color: '#fde047', position: 100 }] },
+  { name: 'Titanium Void', type: 'linear', angle: 180, stops: [{ color: '#18181b', position: 0 }, { color: '#27272a', position: 50 }, { color: '#3f3f46', position: 100 }] },
+  { name: 'Oceanic Abyss', type: 'linear', angle: 135, stops: [{ color: '#0369a1', position: 0 }, { color: '#0284c7', position: 50 }, { color: '#38bdf8', position: 100 }] },
+  { name: 'Rose Quartz', type: 'radial', angle: 0, stops: [{ color: '#fda4af', position: 0 }, { color: '#f43f5e', position: 60 }, { color: '#9f1239', position: 100 }] },
+  { name: 'Twilight Dream', type: 'conic', angle: 0, stops: [{ color: '#6366f1', position: 0 }, { color: '#ec4899', position: 33 }, { color: '#f59e0b', position: 66 }, { color: '#6366f1', position: 100 }] }
+];
+
+function initCustomGradient() {
+  renderPresetsGrid();
+  renderStopsList();
+  renderCustomGradient();
+}
+
+function getCssGradientString(state = gradState) {
+  const sortedStops = [...state.stops].sort((a, b) => a.position - b.position);
+  const stopStr = sortedStops.map(s => `${s.color} ${s.position}%`).join(', ');
+
+  if (state.type === 'linear') {
+    return `linear-gradient(${state.angle}deg, ${stopStr})`;
+  } else if (state.type === 'radial') {
+    return `radial-gradient(circle at center, ${stopStr})`;
+  } else if (state.type === 'conic') {
+    return `conic-gradient(from ${state.angle}deg at 50% 50%, ${stopStr})`;
+  }
+  return `linear-gradient(135deg, ${stopStr})`;
+}
+
+function renderCustomGradient() {
+  const cssGrad = getCssGradientString();
+
+  // 1. Surface stage
+  const surface = document.getElementById('gradStageSurface');
+  if (surface) surface.style.background = cssGrad;
+
+  // 2. Stop bar preview
+  const stopBar = document.getElementById('gradStopsBar');
+  if (stopBar) {
+    const sortedStops = [...gradState.stops].sort((a, b) => a.position - b.position);
+    stopBar.style.background = `linear-gradient(to right, ${sortedStops.map(s => `${s.color} ${s.position}%`).join(', ')})`;
+  }
+
+  // 3. Mockup targets
+  const phoneScreen = document.getElementById('phoneScreenGrad');
+  if (phoneScreen) phoneScreen.style.background = cssGrad;
+
+  const textTarget = document.getElementById('gradientTextTarget');
+  if (textTarget) {
+    textTarget.style.background = cssGrad;
+    textTarget.style.webkitBackgroundClip = 'text';
+    textTarget.style.webkitTextFillColor = 'transparent';
+  }
+
+  const btnTarget = document.getElementById('gradientButtonTarget');
+  if (btnTarget) btnTarget.style.background = cssGrad;
+
+  // 4. Update code snippet
+  updateGradientCodeOutput();
+}
+
+function setGradientType(type) {
+  gradState.type = type;
+  document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(`type${type.charAt(0).toUpperCase() + type.slice(1)}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const linearControls = document.getElementById('linearAngleControls');
+  if (linearControls) {
+    linearControls.style.display = (type === 'linear' || type === 'conic') ? 'block' : 'none';
+  }
+
+  renderCustomGradient();
+}
+
+function setGradientAngle(deg) {
+  gradState.angle = parseInt(deg, 10);
+  const slider = document.getElementById('gradAngleSlider');
+  if (slider) slider.value = gradState.angle;
+  const display = document.getElementById('angleDisplay');
+  if (display) display.textContent = `${gradState.angle}°`;
+  renderCustomGradient();
+}
+
+function setGradientPreviewMode(mode) {
+  gradState.previewMode = mode;
+  document.querySelectorAll('.preview-mode-btn').forEach(b => b.classList.remove('active'));
+  const btn = Array.from(document.querySelectorAll('.preview-mode-btn')).find(b => b.textContent.toLowerCase().includes(mode.toLowerCase()));
+  if (btn) btn.classList.add('active');
+
+  const cardMockup = document.getElementById('previewCardMockup');
+  const phoneMockup = document.getElementById('previewPhoneMockup');
+  const textMockup = document.getElementById('previewTextMockup');
+  const btnMockup = document.getElementById('previewButtonMockup');
+  const surface = document.getElementById('gradStageSurface');
+
+  if (cardMockup) cardMockup.style.display = (mode === 'card') ? 'flex' : 'none';
+  if (phoneMockup) phoneMockup.style.display = (mode === 'phone') ? 'block' : 'none';
+  if (textMockup) textMockup.style.display = (mode === 'text') ? 'block' : 'none';
+  if (btnMockup) btnMockup.style.display = (mode === 'button') ? 'block' : 'none';
+
+  if (surface) {
+    surface.style.display = (mode === 'phone' || mode === 'text' || mode === 'button') ? 'none' : 'block';
+  }
+}
+
+function toggleGradientNoise(enabled) {
+  gradState.noise = enabled;
+  const overlay = document.getElementById('gradNoiseOverlay');
+  if (overlay) overlay.style.display = enabled ? 'block' : 'none';
+}
+
+function renderStopsList() {
+  const container = document.getElementById('stopsListContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  gradState.stops.forEach((stop, idx) => {
+    const row = document.createElement('div');
+    row.className = 'stop-row';
+
+    row.innerHTML = `
+      <input type="color" class="stop-color-input" value="${stop.color}" onchange="updateStopColor(${idx}, this.value)">
+      <input type="text" class="stop-hex-text" value="${stop.color}" onchange="updateStopColor(${idx}, this.value)">
+      <input type="range" class="stop-position-slider" min="0" max="100" value="${stop.position}" oninput="updateStopPosition(${idx}, this.value)">
+      <span class="stop-pos-label">${stop.position}%</span>
+      ${gradState.stops.length > 2 ? `<button class="btn-remove-stop" onclick="removeGradientStop(${idx})">✕</button>` : ''}
+    `;
+    container.appendChild(row);
+  });
+}
+
+function updateStopColor(idx, color) {
+  if (gradState.stops[idx]) {
+    gradState.stops[idx].color = color;
+    renderStopsList();
+    renderCustomGradient();
+  }
+}
+
+function updateStopPosition(idx, pos) {
+  if (gradState.stops[idx]) {
+    gradState.stops[idx].position = parseInt(pos, 10);
+    const labels = document.querySelectorAll('.stop-pos-label');
+    if (labels[idx]) labels[idx].textContent = `${pos}%`;
+    renderCustomGradient();
+  }
+}
+
+function addGradientStop() {
+  if (gradState.stops.length >= 7) {
+    showToast("Maximum 7 color stops reached.");
+    return;
+  }
+  const lastStop = gradState.stops[gradState.stops.length - 1];
+  const newPos = Math.min(100, (lastStop ? lastStop.position : 50) + 15);
+  const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  gradState.stops.push({ color: randomColor, position: newPos });
+  renderStopsList();
+  renderCustomGradient();
+}
+
+function removeGradientStop(idx) {
+  if (gradState.stops.length <= 2) {
+    showToast("Minimum 2 color stops required.");
+    return;
+  }
+  gradState.stops.splice(idx, 1);
+  renderStopsList();
+  renderCustomGradient();
+}
+
+function renderPresetsGrid() {
+  const container = document.getElementById('presetsGridContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  GRADIENT_PRESETS.forEach((preset, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'preset-chip';
+    chip.style.background = getCssGradientString(preset);
+    chip.onclick = () => loadGradientPreset(idx);
+
+    const label = document.createElement('span');
+    label.className = 'preset-chip-label';
+    label.textContent = preset.name;
+    chip.appendChild(label);
+
+    container.appendChild(chip);
+  });
+}
+
+function loadGradientPreset(idx) {
+  const preset = GRADIENT_PRESETS[idx];
+  if (!preset) return;
+  gradState.type = preset.type;
+  gradState.angle = preset.angle;
+  gradState.stops = JSON.parse(JSON.stringify(preset.stops));
+
+  setGradientType(preset.type);
+  setGradientAngle(preset.angle);
+  renderStopsList();
+  renderCustomGradient();
+  showToast(`Loaded preset: ${preset.name}`);
+}
+
+function randomizeGradient() {
+  const vibrantColors = ['#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#6366f1', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#f97316'];
+  const count = 3;
+  const picked = [];
+  for (let i = 0; i < count; i++) {
+    const color = vibrantColors[Math.floor(Math.random() * vibrantColors.length)];
+    picked.push(color);
+  }
+  gradState.stops = [
+    { color: picked[0], position: 0 },
+    { color: picked[1], position: 50 },
+    { color: picked[2], position: 100 }
+  ];
+  gradState.angle = Math.floor(Math.random() * 8) * 45;
+  setGradientAngle(gradState.angle);
+  renderStopsList();
+  renderCustomGradient();
+  showToast("Generated fresh harmonic palette! 🎨");
+}
+
+function setExportFormat(format) {
+  gradState.exportFormat = format;
+  document.querySelectorAll('.code-tab-btn').forEach(btn => btn.classList.remove('active'));
+  const btn = document.getElementById(`tabBtn${format.charAt(0).toUpperCase() + format.slice(1)}`);
+  if (btn) btn.classList.add('active');
+  updateGradientCodeOutput();
+}
+
+function updateGradientCodeOutput() {
+  const codeEl = document.getElementById('gradCodeOutput');
+  if (!codeEl) return;
+  const format = gradState.exportFormat;
+  const sortedStops = [...gradState.stops].sort((a, b) => a.position - b.position);
+
+  let snippet = '';
+  if (format === 'css') {
+    snippet = `/* Modern CSS Gradient */
+background: ${getCssGradientString()};`;
+  } else if (format === 'swiftui') {
+    const swiftColors = sortedStops.map(s => {
+      const rgb = hexToRgb(s.color);
+      return `    .init(color: Color(red: ${(rgb.r/255).toFixed(2)}, green: ${(rgb.g/255).toFixed(2)}, blue: ${(rgb.b/255).toFixed(2)}), location: ${(s.position/100).toFixed(2)})`;
+    }).join(',
+');
+
+    if (gradState.type === 'linear') {
+      snippet = `// SwiftUI 6 LinearGradient
+LinearGradient(
+    stops: [
+${swiftColors}
+    ],
+    startPoint: .topLeading,
+    endPoint: .bottomTrailing
+)`;
+    } else if (gradState.type === 'radial') {
+      snippet = `// SwiftUI 6 RadialGradient
+RadialGradient(
+    stops: [
+${swiftColors}
+    ],
+    center: .center,
+    startRadius: 5,
+    endRadius: 200
+)`;
+    } else {
+      snippet = `// SwiftUI 6 AngularGradient
+AngularGradient(
+    stops: [
+${swiftColors}
+    ],
+    center: .center,
+    startAngle: .degrees(${gradState.angle}),
+    endAngle: .degrees(${gradState.angle + 360})
+)`;
+    }
+  } else if (format === 'tailwind') {
+    const colors = sortedStops.map(s => s.color);
+    if (colors.length === 2) {
+      snippet = `<!-- Tailwind CSS Arbitrary Gradient -->
+<div class="bg-gradient-to-br from-[${colors[0]}] to-[${colors[1]}]"></div>`;
+    } else {
+      snippet = `<!-- Tailwind CSS Arbitrary Gradient -->
+<div class="bg-gradient-to-br from-[${colors[0]}] via-[${colors[1]}] to-[${colors[colors.length - 1]}]"></div>`;
+    }
+  } else if (format === 'flutter') {
+    const flutterColors = sortedStops.map(s => {
+      const hex = s.color.replace('#', '');
+      return `Color(0xFF${hex.toUpperCase()})`;
+    }).join(', ');
+    const flutterStops = sortedStops.map(s => (s.position / 100).toFixed(2)).join(', ');
+    snippet = `// Flutter Decoration
+BoxDecoration(
+  gradient: LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [${flutterColors}],
+    stops: [${flutterStops}],
+  ),
+)`;
+  } else if (format === 'svg') {
+    const svgStops = sortedStops.map(s => `  <stop offset="${s.position}%" stop-color="${s.color}" />`).join('
+');
+    snippet = `<svg width="100%" height="100%">
+  <defs>
+    <linearGradient id="customGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+${svgStops}
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#customGrad)" />
+</svg>`;
+  }
+
+  codeEl.innerHTML = `<code>${escapeHtml(snippet)}</code>`;
+}
+
+function copyGradientCode() {
+  const codeEl = document.getElementById('gradCodeOutput');
+  if (!codeEl) return;
+  const text = codeEl.innerText.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("Copied gradient code to clipboard! 📋");
+  });
 }
 
 // ==========================================
@@ -968,4 +1320,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSampleJson();
   loadSampleSvg();
   loadSampleIcon();
+  initCustomGradient();
 });
