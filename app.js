@@ -546,8 +546,7 @@ background: ${getCssGradientString()};`;
     const swiftColors = sortedStops.map(s => {
       const rgb = hexToRgb(s.color);
       return `    .init(color: Color(red: ${(rgb.r/255).toFixed(2)}, green: ${(rgb.g/255).toFixed(2)}, blue: ${(rgb.b/255).toFixed(2)}), location: ${(s.position/100).toFixed(2)})`;
-    }).join(',
-');
+    }).join(',\n');
 
     if (gradState.type === 'linear') {
       snippet = `// SwiftUI 6 LinearGradient
@@ -604,8 +603,7 @@ BoxDecoration(
   ),
 )`;
   } else if (format === 'svg') {
-    const svgStops = sortedStops.map(s => `  <stop offset="${s.position}%" stop-color="${s.color}" />`).join('
-');
+    const svgStops = sortedStops.map(s => `  <stop offset="${s.position}%" stop-color="${s.color}" />`).join('\n');
     snippet = `<svg width="100%" height="100%">
   <defs>
     <linearGradient id="customGrad" x1="0%" y1="0%" x2="100%" y2="100%">
