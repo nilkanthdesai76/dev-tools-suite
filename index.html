@@ -7,7 +7,39 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261021_v3">
+  <script>
+    function switchTab(tabId) {
+      var panes = document.querySelectorAll('.tab-pane');
+      for (var i = 0; i < panes.length; i++) {
+        panes[i].style.display = 'none';
+        panes[i].classList.remove('active');
+      }
+      var items = document.querySelectorAll('.nav-item');
+      for (var i = 0; i < items.length; i++) {
+        items[i].classList.remove('active');
+      }
+
+      var targetPane = document.getElementById('tab-' + tabId);
+      if (targetPane) {
+        targetPane.style.display = 'block';
+        targetPane.classList.add('active');
+      }
+
+      var navBtn = document.querySelector('.nav-item[data-tab="' + tabId + '"]');
+      if (navBtn) {
+        navBtn.classList.add('active');
+      }
+
+      if (window.renderMesh && tabId === 'mesh-gradient') {
+        window.renderMesh();
+      }
+      if (window.renderCustomGradient && tabId === 'custom-gradient') {
+        window.renderCustomGradient();
+      }
+    }
+    window.switchTab = switchTab;
+  </script>
 </head>
 <body>
   <div class="app-layout">
@@ -382,6 +414,6 @@
     </main>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20261021_v3"></script>
 </body>
 </html>

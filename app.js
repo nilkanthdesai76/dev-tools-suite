@@ -3,21 +3,37 @@
 
 // --- Navigation Tabs ---
 function switchTab(tabId) {
-  document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(el => {
+    el.style.display = 'none';
+    el.classList.remove('active');
+  });
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
   const targetPane = document.getElementById(`tab-${tabId}`);
-  if (targetPane) targetPane.classList.add('active');
+  if (targetPane) {
+    targetPane.style.display = 'block';
+    targetPane.classList.add('active');
+  }
 
   const navItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
   if (navItem) navItem.classList.add('active');
 
-  if (tabId === 'mesh-gradient') {
+  if (tabId === 'mesh-gradient' && typeof renderMesh === 'function') {
     renderMesh();
-  } else if (tabId === 'custom-gradient') {
+  } else if (tabId === 'custom-gradient' && typeof renderCustomGradient === 'function') {
     renderCustomGradient();
   }
 }
+
+window.switchTab = switchTab;
+
+document.addEventListener('click', (e) => {
+  const navBtn = e.target.closest('.nav-item');
+  if (navBtn) {
+    const tabId = navBtn.getAttribute('data-tab');
+    if (tabId) switchTab(tabId);
+  }
+});
 
 // ==========================================
 // 1. Xcode AppIcon Studio
@@ -358,6 +374,7 @@ function renderCustomGradient() {
   // 4. Update code snippet
   updateGradientCodeOutput();
 }
+window.renderCustomGradient = renderCustomGradient;
 
 function setGradientType(type) {
   gradState.type = type;
@@ -531,6 +548,7 @@ function setExportFormat(format) {
   if (btn) btn.classList.add('active');
   updateGradientCodeOutput();
 }
+window.renderCustomGradient = renderCustomGradient;
 
 function updateGradientCodeOutput() {
   const codeEl = document.getElementById('gradCodeOutput');

@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "DevForge Developer Suite - Offline-first developer utility toolkit",
   "scripts": {
-    "dev": "python3 -m http.server 4200 --bind 127.0.0.1",
-    "start": "python3 -m http.server 4200 --bind 127.0.0.1"
+    "dev": "python3 serve.py",
+    "start": "python3 serve.py"
   },
   "keywords": [
     "developer-tools",
